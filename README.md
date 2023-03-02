@@ -60,9 +60,9 @@ To reproduce GPT-2 results, the first step is to tokenize the dataset. We will u
 
 ```
 python data/openwebtext/prepare.py
-The above command creates two files, train.bin and val.bin, which hold the GPT-2 byte pair encoding (BPE) token IDs in one sequence, stored as raw uint16 bytes.
 ```  
 
+The above command creates two files, train.bin and val.bin, which hold the GPT-2 byte pair encoding (BPE) token IDs in one sequence, stored as raw uint16 bytes.
 Next, we need to train the GPT-2 model. To reproduce GPT-2 (124M) results, we need at least an 8X A100 40GB node and run the following command:
 
 ```
@@ -75,13 +75,18 @@ It is important to note that a GPT-2 model just evaluated on OpenWebText gets a 
 
 If we have a cluster environment with multiple GPU nodes, we can run the following commands across two nodes:
 
-```
 Run on the first (master) node with example IP 123.456.123.456:
+
+```
 torchrun --nproc_per_node=8 --nnodes=2 --node_rank=0 --master_addr=123.456.123.456 --master_port=1234 train.py
 ```  
 
 ### Run on the worker node:
+
+```
 torchrun --nproc_per_node=8 --nnodes=2 --node_rank=1 --master_addr=123.456.123.456 --master_port=1234 train.py
+```  
+
 If we do not have Infiniband, we should prepend NCCL_IB_DISABLE=1 to the above commands. It is also a good idea to benchmark the interconnect (e.g., iperf3). The checkpoints are periodically written to the --out_dir. We can sample from the model by running the following command:
 
 ```
@@ -90,9 +95,7 @@ python sample.py
 
 To train on a single GPU, we can run the following command:
 
-```
 We can find all the arguments in the train.py script. We will likely need to tune many of those variables depending on our needs.
-```  
 
 ### Baselines
 OpenAI GPT-2 checkpoints allow us to set up some baselines for OpenWebText. We can obtain the following numbers by running the following commands:
