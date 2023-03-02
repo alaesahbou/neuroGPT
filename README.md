@@ -1,15 +1,20 @@
 # neuroGPT
+NeuroGPT is an open-source project that provides an easy-to-use framework for training and generating text using the GPT architecture. With support for both CPU and GPU training, this project allows users to quickly and easily generate text in a variety of contexts, from literature to machine learning.
+
+The project includes pre-trained models for Shakespearean literature and OpenWebText, as well as instructions for training your own models using PyTorch and HuggingFace's transformers library. The project also includes support for logging and tracking training progress using Weights and Biases.
+
+Whether you're a researcher looking to experiment with new language models or a writer looking for a tool to help generate new ideas, NeuroGPT is a powerful and flexible framework that can help you achieve your goals.
 
 ## Installation
 To run the code, you need to install the following dependencies:
 
 - [pytorch](https://pytorch.org) <3
 - [numpy](https://numpy.org/install/) <3
-```pip install transformers``` for huggingface transformers version <3 (required to load GPT-2 checkpoints)
-```pip install datasets``` for huggingface datasets version <3 (needed to download and preprocess OpenWebText)
-```pip install tiktoken``` for OpenAI's fast BPE code version <3
-```pip install wandb``` for optional logging version <3
-```pip install tqdm```
+- ```pip install transformers``` for huggingface transformers version <3 (required to load GPT-2 checkpoints)
+- ```pip install datasets``` for huggingface datasets version <3 (needed to download and preprocess OpenWebText)
+- ```pip install tiktoken``` for OpenAI's fast BPE code version <3
+- ```pip install wandb``` for optional logging version <3
+- ```pip install tqdm```
 
 ## Quick Start
 If you want to try out the code without much hassle, you can train a character-level GPT model on Shakespeare's works. First, download the text file as a single (1MB) file and turn it into a stream of integers by running:
