@@ -161,3 +161,13 @@ $ python sample.py \
 ```  
 
 If you want to prompt the model with text from a file, you can use the --start=FILE:prompt.txt option.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Team
+
+- Alae-eddine Sahbou [alaesahbou](https://github.com/alaesahbou) 💼
+- Othmane Gattouchi 
+- Hamza Slahmi [hamzaslh](https://github.com/hamzaslh) 💼
