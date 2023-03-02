@@ -53,3 +53,62 @@ $ python sample.py --out_dir=out-shakespeare-char
 
 #### Tips for Apple Silicon Macbooks
 If you're using an Apple Silicon Macbook, you can use the `--device mps` (short for "Metal Performance Shaders"); PyTorch then uses the on-chip GPU that can *significantly* accelerate training (2-3X) and allow you to use larger networks.
+
+## Reproducing GPT-2 Results
+
+To reproduce GPT-2 results, the first step is to tokenize the dataset. We will use the OpenWebText dataset, which is an open reproduction of OpenAI's (private) WebText. To download and tokenize the dataset, we can run the following command:
+
+```
+python data/openwebtext/prepare.py
+The above command creates two files, train.bin and val.bin, which hold the GPT-2 byte pair encoding (BPE) token IDs in one sequence, stored as raw uint16 bytes.
+```  
+
+Next, we need to train the GPT-2 model. To reproduce GPT-2 (124M) results, we need at least an 8X A100 40GB node and run the following command:
+
+```
+torchrun --standalone --nproc_per_node=8 train.py config/train_gpt2.py
+```  
+
+This command runs for about four days using PyTorch Distributed Data Parallel (DDP) and brings down the loss to around 2.85.
+
+It is important to note that a GPT-2 model just evaluated on OpenWebText gets a validation loss of around 3.11, but if we fine-tune it, it will come down to around 2.85 (due to an apparent domain gap), making the two models match.
+
+If we have a cluster environment with multiple GPU nodes, we can run the following commands across two nodes:
+
+```
+Run on the first (master) node with example IP 123.456.123.456:
+torchrun --nproc_per_node=8 --nnodes=2 --node_rank=0 --master_addr=123.456.123.456 --master_port=1234 train.py
+```  
+
+### Run on the worker node:
+torchrun --nproc_per_node=8 --nnodes=2 --node_rank=1 --master_addr=123.456.123.456 --master_port=1234 train.py
+If we do not have Infiniband, we should prepend NCCL_IB_DISABLE=1 to the above commands. It is also a good idea to benchmark the interconnect (e.g., iperf3). The checkpoints are periodically written to the --out_dir. We can sample from the model by running the following command:
+
+```
+python sample.py
+```  
+
+To train on a single GPU, we can run the following command:
+
+```
+We can find all the arguments in the train.py script. We will likely need to tune many of those variables depending on our needs.
+```  
+
+### Baselines
+OpenAI GPT-2 checkpoints allow us to set up some baselines for OpenWebText. We can obtain the following numbers by running the following commands:
+
+```
+python train.py eval_gpt2
+python train.py eval_gpt2_medium
+python train.py eval_gpt2_large
+python train.py eval_gpt2_xl
+```  
+
+The following table shows the losses on the training and validation datasets:
+
+| model | params | train loss | val loss |
+| ------| ------ | ---------- | -------- |
+| gpt2 | 124M         | 3.11  | 3.12     |
+| gpt2-medium | 350M  | 2.85  | 2.84     |
+| gpt2-large | 774M   | 2.66  | 2.67     |
+| gpt2-xl | 1558M     | 2.56  | 2.54     |
