@@ -115,3 +115,49 @@ The following table shows the losses on the training and validation datasets:
 | gpt2-medium | 350M  | 2.85  | 2.84     |
 | gpt2-large | 774M   | 2.66  | 2.67     |
 | gpt2-xl | 1558M     | 2.56  | 2.54     |
+
+It's worth noting that GPT-2 was trained on a closed dataset called WebText, which was never released. OpenWebText is an open reproduction of this dataset, but it's not an exact match. This creates a domain gap between the two datasets. If you take the GPT-2 (124M) checkpoint and fine-tune it directly on OpenWebText, you can reach a loss of approximately 2.85. This becomes the more appropriate baseline for reproducing the dataset.
+
+Fine-tuning is similar to training, except that we initialize from a pre-trained model and use a smaller learning rate. To fine-tune a GPT model on new text, you can use the tiny Shakespeare dataset as an example. First, run the prepare.py script in the data/shakespeare directory to download and render the dataset into train.bin and val.bin files, using the OpenAI BPE tokenizer from GPT-2. Unlike OpenWebText, this process will only take seconds. Fine-tuning can be done in just a few minutes on a single GPU. To run an example fine-tuning, execute the following command:
+
+```
+$ python train.py config/finetune_shakespeare.py
+```  
+
+This command will load the config parameter overrides in config/finetune_shakespeare.py, which initializes the model from a GPT2 checkpoint and trains it with a smaller learning rate. If you encounter out-of-memory errors, try decreasing the model size or the context length. The best checkpoint (with the lowest validation loss) will be saved in the out_dir directory, which is out-shakespeare by default, according to the config file. To generate text using the fine-tuned model, run the following command:
+
+```
+$ python sample.py --out_dir=out-shakespeare
+```  
+
+This will prompt the model to generate text, and the output will be similar to the following:
+
+```
+THEODORE:
+Thou shalt sell me to the highest bidder: if I die,
+I sell thee to the first; if I go mad,
+I sell thee to the second; if I
+lie, I sell thee to the third; if I slay,
+I sell thee to the fourth: so buy or sell,
+I tell thee again, thou shalt not sell my
+possession.
+JULIET:
+And if thou steal, thou shalt not sell thyself.
+THEODORE:
+I do not steal; I sell the stolen goods.
+THEODORE:
+Thou know'st not what thou sell'st; thou, a woman,
+Thou art ever a victim, a thing of no worth:
+Thou hast no right, no right, but to be sold.
+``` 
+
+Please note that the hyperparameters in the finetune_shakespeare.py config file have not been heavily tuned, so feel free to experiment with different values. To sample from a pre-trained GPT-2 model or a model you trained yourself, use the sample.py script. For example, the following command will sample from the largest available gpt2-xl model:
+
+```
+$ python sample.py \
+    --init_from=gpt2-xl \
+    --start="What is the answer to life, the universe, and everything?" \
+    --num_samples=5 --max_new_tokens=100
+```  
+
+If you want to prompt the model with text from a file, you can use the --start=FILE:prompt.txt option.
