@@ -169,5 +169,5 @@ This project is licensed under the MIT License.
 ## Team
 
 - Alae-eddine Sahbou [alaesahbou](https://github.com/alaesahbou) 💼
-- Othmane Gattouchi 
+- Othmane Gattouchi [payb0y](https://github.com/payb0y) 💼
 - Hamza Slahmi [hamzaslh](https://github.com/hamzaslh) 💼
